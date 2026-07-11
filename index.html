@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#FFFFFF" />
+<title>Huế Vietnamese Cuisine · Order Online</title>
+<meta name="description" content="Order Huế Vietnamese Cuisine online for pickup in Seattle. Phở, Bánh Mì, vermicelli bowls, catering and loyalty rewards." />
+<meta name="keywords" content="Vietnamese restaurant Seattle, Huế cuisine, Phở, Bánh Mì, vermicelli, catering Seattle, Vietnamese food pickup" />
+<meta name="author" content="Huế Vietnamese Cuisine" />
+<meta name="robots" content="index, follow" />
+<link rel="canonical" href="https://huevietnamesecuisine.com/" />
+<!-- Google Search Console: after you add the site, paste the verification meta tag Google gives you on the next line -->
+<!-- <meta name="google-site-verification" content="YOUR_TOKEN" /> -->
+<!-- Open Graph (Facebook / iMessage / link previews) -->
+<meta property="og:type" content="restaurant" />
+<meta property="og:site_name" content="Huế Vietnamese Cuisine" />
+<meta property="og:title" content="Huế Vietnamese Cuisine · Order Online" />
+<meta property="og:description" content="Authentic Huế Vietnamese cuisine in Seattle — order online for pickup. Phở, Bánh Mì, vermicelli, catering & loyalty rewards." />
+<meta property="og:url" content="https://huevietnamesecuisine.com/" />
+<meta property="og:image" content="https://huevietnamesecuisine.com/og-image.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Huế Vietnamese Cuisine · Order Online" />
+<meta name="twitter:description" content="Authentic Huế Vietnamese cuisine in Seattle — order online for pickup." />
+<meta name="twitter:image" content="https://huevietnamesecuisine.com/og-image.jpg" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Restaurant",
+  "name": "Huế Vietnamese Cuisine",
+  "servesCuisine": "Vietnamese",
+  "url": "https://huevietnamesecuisine.com/",
+  "telephone": "+1-206-693-3311",
+  "priceRange": "$$",
+  "acceptsReservations": "False",
+  "image": "https://huevietnamesecuisine.com/og-image.jpg",
+  "menu": "https://huevietnamesecuisine.com/",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "6538 4th Ave S, Suite 1",
+    "addressLocality": "Seattle",
+    "addressRegion": "WA",
+    "postalCode": "98108",
+    "addressCountry": "US"
+  },
+  "openingHoursSpecification": [{
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+    "opens": "10:00",
+    "closes": "20:00"
+  }],
+  "hasMenu": "https://huevietnamesecuisine.com/",
+  "potentialAction": {
+    "@type": "OrderAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "https://huevietnamesecuisine.com/order",
+      "actionPlatform": ["http://schema.org/DesktopWebPlatform","http://schema.org/MobileWebPlatform"]
+    },
+    "deliveryMethod": "http://purl.org/goodrelations/v1#PickUp"
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+  <script src="https://js.stripe.com/v3/"></script>
+  <!-- PayPal SDK — buttons only (the write-in-price "hosted-buttons" component was removed).
+       IMPORTANT: replace client-id below with your LIVE Client ID from developer.paypal.com
+       (Apps & Credentials → Live). It must be the same account that receives the money. -->
+  <script src="https://www.paypal.com/sdk/js?client-id=BAAyGutgp272_qRykhqwykHWGOAwYawujCFN-9FHEvbvdnqIS3P7Vhs9AbjC9V3dRFwhWqBo2VmJHHM74s&components=buttons&enable-funding=venmo&currency=USD"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+</head>
+<body>
+
+<!-- ======================= TOP BAR ======================= -->
+<header class="topbar">
+  <img class="topbar__mark" src="data:image/jpeg;base64,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" alt="Huế logo" />
+  <div class="topbar__name">Huế<small>Vietnamese Cuisine</small></div>
+  <button class="topbar__cart" id="cartBtn" aria-label="View cart">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.5 13h11l2.5-9H6"/></svg>
+    <span>Cart</span>
+    <span class="cart-count" id="cartCountTop">0</span>
+  </button>
+</header>
+
+<main>
+<!-- ======================= HOME ======================= -->
+<section class="view active" id="view-home" aria-label="Home">
+  <div class="wrap">
+    <!-- Today's Table — AI photos, each linked to its exact order-menu item -->
+    <div class="section-pad">
+      <div class="title-row"><span class="eyebrow">Fresh from our kitchen</span></div>
+      <h2 style="font-size:26px;color:var(--crimson)">Today&rsquo;s Features</h2>
+      <div class="today-vn">Tap any dish to order.</div>
+      <div class="gold-rule"></div>
+      <div class="photos">
+        <figure class="pcard pcard--hero" data-goitem="A1" role="button" tabindex="0" aria-label="Egg Rolls — order this dish">
+          <img src="images/egg-rolls-real.jpg" alt="Egg Rolls (Ch&#7843; Gi&#242;)" loading="lazy" width="1100" height="738">
+          <figcaption class="pcard__cap">Egg Rolls<span class="pcard__vn">Ch&#7843; Gi&#242;</span></figcaption>
+          <small class="ai-cap">Photographed in our kitchen.</small>
+        </figure>
+        <figure class="pcard pcard--hero" data-goitem="A3" role="button" tabindex="0" aria-label="Spring Rolls — order this dish">
+          <img src="images/summer-rolls-real.jpg" alt="Spring Rolls (G&#7887;i Cu&#7889;n)" loading="lazy" width="1100" height="738">
+          <figcaption class="pcard__cap">Spring Rolls<span class="pcard__vn">G&#7887;i Cu&#7889;n</span></figcaption>
+          <small class="ai-cap">Photographed in our kitchen.</small>
+        </figure>
+        <figure class="pcard pcard--hero" data-goitem="N1" role="button" tabindex="0" aria-label="B&#250;n B&#242; Hu&#7871; &middot; Signature 🌶 — order this dish">
+          <img src="images/bun-bo-hue.jpg" alt="B&#250;n B&#242; Hu&#7871; &middot; Signature 🌶 (Spicy Beef Noodle Soup)" loading="lazy" width="1100" height="578">
+          <figcaption class="pcard__cap">B&#250;n B&#242; Hu&#7871; &middot; Signature 🌶<span class="pcard__vn">Spicy Beef Noodle Soup</span></figcaption>
+          <small class="ai-cap">Photographed in our kitchen.</small>
+        </figure>
+        <figure class="pcard pcard--hero" data-goitem="S1" role="button" tabindex="0" aria-label="Beef Short Ribs &amp; Meatball Ph&#7903; — order this dish">
+          <img src="images/tomahawk-meatball-pho.jpg" alt="Beef Short Ribs &amp; Meatball Ph&#7903; (Ph&#7903; S&#432;&#7901;n B&#242; &amp; B&#242; Vi&#234;n)" loading="lazy" width="859" height="1280">
+          <figcaption class="pcard__cap">Beef Short Ribs &amp; Meatball Ph&#7903;<span class="pcard__vn">Ph&#7903; S&#432;&#7901;n B&#242; &amp; B&#242; Vi&#234;n</span></figcaption>
+          <small class="ai-cap">AI-assisted illustration; actual food may vary.</small>
+        </figure>
+        <figure class="pcard pcard--hero" data-goitem="S2" role="button" tabindex="0" aria-label="Oxtail &amp; Meatball Ph&#7903; — order this dish">
+          <img src="images/oxtail-meatball-pho.jpg" alt="Oxtail &amp; Meatball Ph&#7903; (Ph&#7903; &#272;u&#244;i B&#242; &amp; B&#242; Vi&#234;n)" loading="lazy" width="832" height="1248">
+          <figcaption class="pcard__cap">Oxtail &amp; Meatball Ph&#7903;<span class="pcard__vn">Ph&#7903; &#272;u&#244;i B&#242; &amp; B&#242; Vi&#234;n</span></figcaption>
+          <small class="ai-cap">AI-assisted illustration; actual food may vary.</small>
+        </figure>
+        <figure class="pcard pcard--hero" data-goitem="A7" role="button" tabindex="0" aria-label="Salt &amp; Pepper Calamari — order this dish">
+          <img src="images/salt-pepper-calamari.jpg" alt="Salt &amp; Pepper Calamari (M&#7921;c Chi&#234;n Mu&#7889;i)" loading="lazy" width="1100" height="738">
+          <figcaption class="pcard__cap">Salt &amp; Pepper Calamari<span class="pcard__vn">M&#7921;c Chi&#234;n Mu&#7889;i</span></figcaption>
+          <small class="ai-cap">AI-assisted illustration; actual food may vary.</small>
+        </figure>
+        <figure class="pcard pcard--hero" data-goitem="S6" role="button" tabindex="0" aria-label="Beef Ph&#7903; &middot; rare steak &amp; meatball — order this dish">
+          <img src="images/rare-steak-meatball-pho.jpg" alt="Beef Ph&#7903; &middot; rare steak &amp; meatball (Ph&#7903; T&#225;i B&#242; Vi&#234;n)" loading="lazy" width="832" height="1248">
+          <figcaption class="pcard__cap">Beef Ph&#7903; &middot; rare steak &amp; meatball<span class="pcard__vn">Ph&#7903; T&#225;i B&#242; Vi&#234;n</span></figcaption>
+          <small class="ai-cap">AI-assisted illustration; actual food may vary.</small>
+        </figure>
+        <figure class="pcard pcard--hero" data-goitem="M2" role="button" tabindex="0" aria-label="B&#242; L&#250;c L&#7855;c — order this dish">
+          <img src="images/shaken-beef.jpg" alt="B&#242; L&#250;c L&#7855;c (Shaken Beef)" loading="lazy" width="1100" height="738">
+          <figcaption class="pcard__cap">B&#242; L&#250;c L&#7855;c<span class="pcard__vn">Shaken Beef</span></figcaption>
+          <small class="ai-cap">AI-assisted illustration; actual food may vary.</small>
+        </figure>
+        <figure class="pcard pcard--hero" data-goitem="M1" role="button" tabindex="0" aria-label="Mongolian Beef — order this dish">
+          <img src="images/mongolian-beef-real.jpg" alt="Mongolian Beef (Wok-seared, sweet-savory glaze)" loading="lazy" width="1100" height="738">
+          <figcaption class="pcard__cap">Mongolian Beef<span class="pcard__vn">Wok-seared, sweet-savory glaze</span></figcaption>
+          <small class="ai-cap">Photographed in our kitchen.</small>
+        </figure>
+        <figure class="pcard pcard--hero" data-goitem="W2" role="button" tabindex="0" aria-label="Shrimp &amp; Meat Fried Rice — order this dish">
+          <img src="images/fried-rice-real.jpg" alt="Shrimp &amp; Meat Fried Rice (C&#417;m Chi&#234;n Th&#7853;p C&#7849;m)" loading="lazy" width="1100" height="738">
+          <figcaption class="pcard__cap">Shrimp &amp; Meat Fried Rice<span class="pcard__vn">C&#417;m Chi&#234;n Th&#7853;p C&#7849;m</span></figcaption>
+          <small class="ai-cap">Photographed in our kitchen.</small>
+        </figure>
+        <figure class="pcard pcard--hero" data-goitem="G1" role="button" tabindex="0" aria-label="Papaya Salad — order this dish">
+          <img src="images/papaya-salad-real.jpg" alt="Papaya Salad (G&#7887;i &#272;u &#272;&#7911; &middot; chicken or shrimp)" loading="lazy" width="688" height="1504">
+          <figcaption class="pcard__cap">Papaya Salad<span class="pcard__vn">G&#7887;i &#272;u &#272;&#7911; &middot; chicken or shrimp</span></figcaption>
+          <small class="ai-cap">Photographed in our kitchen.</small>
+        </figure>
+        <figure class="pcard pcard--hero" data-goitem="W2" role="button" tabindex="0" aria-label="Shrimp Fried Rice — order this dish">
+          <img src="images/shrimp-fried-rice-2.jpg" alt="Shrimp Fried Rice (C&#417;m Chi&#234;n T&#244;m)" loading="lazy" width="1100" height="738">
+          <figcaption class="pcard__cap">Shrimp Fried Rice<span class="pcard__vn">C&#417;m Chi&#234;n T&#244;m</span></figcaption>
+          <small class="ai-cap">AI-assisted illustration; actual food may vary.</small>
+        </figure>
+        <figure class="pcard pcard--hero" data-go="catering" role="button" tabindex="0" aria-label="Egg Rolls Tray &middot; Catering — order this dish">
+          <img src="images/egg-rolls-tray-real.jpg" alt="Egg Rolls Tray &middot; Catering (Ch&#7843; Gi&#242; &mdash; party tray)" loading="lazy" width="1100" height="733">
+          <figcaption class="pcard__cap">Egg Rolls Tray &middot; Catering<span class="pcard__vn">Ch&#7843; Gi&#242; &mdash; party tray</span></figcaption>
+          <small class="ai-cap">Photographed in our kitchen.</small>
+        </figure>
+        <figure class="pcard pcard--hero" data-goitem="B6" role="button" tabindex="0" aria-label="B&#225;nh M&#236; Sandwiches — order this dish">
+          <img src="images/banh-mi-grilled-pork.jpg" alt="B&#225;nh M&#236; Sandwiches (B&#225;nh M&#236; Th&#7883;t N&#432;&#7899;ng &amp; more)" loading="lazy" width="1100" height="1100">
+          <figcaption class="pcard__cap">B&#225;nh M&#236; Sandwiches<span class="pcard__vn">B&#225;nh M&#236; Th&#7883;t N&#432;&#7899;ng &amp; more</span></figcaption>
+          <small class="ai-cap">Photographed in our kitchen.</small>
+        </figure>
+        <figure class="pcard pcard--hero" data-goitem="T1" role="button" tabindex="0" aria-label="Mango Sticky Rice — order this dish">
+          <img src="images/mango-sticky-rice.jpg" alt="Mango Sticky Rice (X&#244;i Xo&#224;i)" loading="lazy" width="784" height="1168">
+          <figcaption class="pcard__cap">Mango Sticky Rice<span class="pcard__vn">X&#244;i Xo&#224;i</span></figcaption>
+          <small class="ai-cap">AI-assisted illustration; actual food may vary.</small>
+        </figure>
+        <figure class="pcard pcard--hero" data-goitem="S5" role="button" tabindex="0" aria-label="Combo Ph&#7903; — order this dish">
+          <img src="images/combo-pho.jpg" alt="Combo Ph&#7903; (Ph&#7903; &#272;&#7863;c Bi&#7879;t)" loading="lazy" width="832" height="1248">
+          <figcaption class="pcard__cap">Combo Ph&#7903;<span class="pcard__vn">Ph&#7903; &#272;&#7863;c Bi&#7879;t</span></figcaption>
+          <small class="ai-cap">AI-assisted illustration; actual food may vary.</small>
+        </figure>
+        <figure class="pcard pcard--hero" data-goitem="S8" role="button" tabindex="0" aria-label="Tofu, Vegan Ham &amp; Vegetable Ph&#7903; — order this dish">
+          <img src="images/veg-tofu-pho.jpg" alt="Tofu, Vegan Ham &amp; Vegetable Ph&#7903; (Ph&#7903; Chay)" loading="lazy" width="832" height="1248">
+          <figcaption class="pcard__cap">Tofu, Vegan Ham &amp; Vegetable Ph&#7903;<span class="pcard__vn">Ph&#7903; Chay</span></figcaption>
+          <small class="ai-cap">AI-assisted illustration; actual food may vary.</small>
+        </figure>
+        <figure class="pcard pcard--hero" data-goitem="A3" role="button" tabindex="0" aria-label="Shrimp &amp; Pork Summer Rolls — order this dish">
+          <img src="images/shrimp-pork-summer-rolls.jpg" alt="Shrimp &amp; Pork Summer Rolls (G&#7887;i Cu&#7889;n T&#244;m &amp; Th&#7883;t Heo)" loading="lazy" width="832" height="1248">
+          <figcaption class="pcard__cap">Shrimp &amp; Pork Summer Rolls<span class="pcard__vn">G&#7887;i Cu&#7889;n T&#244;m &amp; Th&#7883;t Heo</span></figcaption>
+          <small class="ai-cap">AI-assisted illustration; actual food may vary.</small>
+        </figure>
+        <figure class="pcard pcard--hero" data-goitem="S4" role="button" tabindex="0" aria-label="Seafood Ph&#7903; — order this dish">
+          <img src="images/seafood-pho.jpg" alt="Seafood Ph&#7903; (Ph&#7903; H&#7843;i S&#7843;n)" loading="lazy" width="832" height="1248">
+          <figcaption class="pcard__cap">Seafood Ph&#7903;<span class="pcard__vn">Ph&#7903; H&#7843;i S&#7843;n</span></figcaption>
+          <small class="ai-cap">AI-assisted illustration; actual food may vary.</small>
+        </figure>
+        <figure class="pcard pcard--hero" data-goitem="D9" role="button" tabindex="0" aria-label="Avocado Smoothie — order this dish">
+          <img src="images/avocado-smoothie.jpg" alt="Avocado Smoothie (Sinh T&#7889; B&#417;)" loading="lazy" width="864" height="1152">
+          <figcaption class="pcard__cap">Avocado Smoothie<span class="pcard__vn">Sinh T&#7889; B&#417;</span></figcaption>
+          <small class="ai-cap">AI-assisted illustration; actual food may vary.</small>
+        </figure>
+        <figure class="pcard pcard--hero" data-goitem="D7" role="button" tabindex="0" aria-label="Strawberry Smoothie — order this dish">
+          <img src="images/strawberry-smoothie.jpg" alt="Strawberry Smoothie (Sinh T&#7889; D&#226;u)" loading="lazy" width="864" height="1152">
+          <figcaption class="pcard__cap">Strawberry Smoothie<span class="pcard__vn">Sinh T&#7889; D&#226;u</span></figcaption>
+          <small class="ai-cap">AI-assisted illustration; actual food may vary.</small>
+        </figure>
+      </div>
+    </div>
+
+    <!-- quick actions -->
+    <div class="quick">
+      <button class="quick__btn primary" data-go="order">
+        <span class="ico">🍜</span>
+        <span class="lbl">Order Online</span>
+        <span class="sub">Pickup ready in ~15–20 min</span>
+        <span class="arrow">START ORDER →</span>
+      </button>
+      <button class="quick__btn" data-go="catering">
+        <span class="ico">🎉</span><span class="lbl">Catering</span>
+        <span class="sub">Feed the whole party</span>
+        <span class="arrow">REQUEST →</span>
+      </button>
+      <button class="quick__btn" data-go="loyalty">
+        <span class="ico">⭐</span><span class="lbl">Rewards</span>
+        <span class="sub">Earn points every visit</span>
+        <span class="arrow">JOIN →</span>
+      </button>
+    </div>
+
+    <!-- promotions: shown ONE time -->
+    <div class="promos" aria-label="Current promotions">
+      <div class="promo"><span class="badge">🕑</span><div><div class="h">Happy Hour · 2–5 PM Daily</div><div class="d">$2 off all chicken wings</div></div></div>
+      <div class="promo"><span class="badge">🥖</span><div><div class="h">Limited Time Promotion · Buy 10 Get 1 Free</div><div class="d">Bánh Mì — mix &amp; match any sandwich</div></div></div>
+      <div class="promo"><span class="badge">⭐</span><div><div class="h">Loyalty Rewards</div><div class="d">100 points = a free Bánh Mì of your choice</div></div></div>
+    </div>
+
+
+    <!-- lead magnet -->
+    <div class="section-pad lead">
+      <div class="lead__card">
+        <h3>Get $5 off your first online order of $50 or more</h3>
+        <p>Join our list for seasonal specials and catering deals. We will email your coupon right away.</p>
+        <div class="lead__row">
+          <input type="email" id="leadEmail" placeholder="you@email.com" autocomplete="email" inputmode="email" />
+          <button class="lead__btn" id="leadBtn">Send my coupon</button>
+        </div>
+        <small class="lead__note" id="leadMsg"></small>
+      </div>
+    </div>
+  </div>
+
+  <!-- business card -->
+  <div class="section-pad" style="text-align:center">
+    <figure class="pcard" data-go="order" role="button" tabindex="0" aria-label="Hue Vietnamese Cuisine business card — view menu and order online" style="max-width:560px;margin:0 auto;cursor:pointer">
+      <img src="images/business-card.jpg" alt="Hu&#7871; Vietnamese Cuisine business card &mdash; 6538 4th Ave S, Suite 1, Seattle, WA 98108 &middot; (206) 693-3311 &middot; Mon&ndash;Sat 10 AM&ndash;8 PM" loading="lazy" width="1280" height="723" style="width:100%;height:auto;border-radius:14px">
+      <figcaption class="pcard__cap">Tap to view the menu.</figcaption>
+      <small class="ai-cap">AI-assisted illustration.</small>
+    </figure>
+  </div>
+
+  <!-- footer -->
+  <footer class="foot">
+    <div class="foot__grid">
+      <div class="foot__col">
+        <b>Hu&#7871; Vietnamese Cuisine</b>
+        <button class="foot__link" data-go="order">Order online</button>
+        <button class="foot__link" data-go="catering">Catering</button>
+        <button class="foot__link" data-go="loyalty">Rewards</button>
+      </div>
+      <div class="foot__col">
+        <b>Visit</b>
+        <span>6538 4th Ave S, Suite 1<br>Seattle, WA 98108</span>
+        <a href="tel:+12066933311">(206) 693-3311</a>
+        <span>Mon&ndash;Sat &middot; 10 AM &ndash; 8 PM</span>
+      </div>
+      <div class="foot__col">
+        <b>Company</b>
+        <a href="#" data-sheet="contactSheet">Contact</a>
+        <a href="#" data-sheet="privacySheet">Privacy Policy</a>
+        <a href="#" data-sheet="termsSheet">Terms of Service</a>
+        <a href="#" data-sheet="aiSheet">AI &amp; Transparency</a>
+      </div>
+    </div>
+    <div class="foot__copy">&copy; <span id="footYear"></span> Hu&#7871; Vietnamese Cuisine &middot; Seattle, WA &middot; All rights reserved.</div>
+  </footer>
+</section>
+
+<!-- ======================= ORDER ======================= -->
+<section class="view" id="view-order" aria-label="Order online">
+  <div class="wrap">
+    <div class="catbar"><div class="catbar__row" id="catRow"></div></div>
+    <div id="menuList" style="padding-bottom:90px"></div>
+  </div>
+</section>
+
+<!-- ======================= CATERING ======================= -->
+<section class="view" id="view-catering" aria-label="Catering">
+  <div class="wrap section-pad">
+    <span class="eyebrow">Let us cater</span>
+    <div class="title-row"><h2>Catering</h2></div>
+    <div class="gold-rule"></div>
+    <p class="lead">Bring the flavors of Huế to your gathering. Every tray is made to order with the same care as our dining room — fresh herbs, house sauces, and rice noodles prepared the morning of your pickup.</p>
+
+    <div class="pkgs">
+      <div class="pkg cat-size"><div class="star">⭐</div><div class="pn">Small Tray</div><div class="pp">$65</div><div class="pd">Serve 4-6, size varies · perfect for a small potluck.</div></div>
+      <div class="pkg cat-size"><div class="star">⭐⭐</div><div class="pn">Medium Tray</div><div class="pp">$100</div><div class="pd">Serve 8-10, size varies · great for the office.</div></div>
+      <div class="pkg cat-size"><div class="star">⭐⭐⭐</div><div class="pn">Large Tray</div><div class="pp">$140</div><div class="pd">Serve 12-14, size varies.</div></div>
+    </div>
+
+    <div class="callout">
+      All catering items are <b>pickup only</b>. <b>24 hours advance notice</b> is required for catering orders.
+      To place a catering order sooner, call us at <a href="tel:+12066933311">(206) 693-3311</a>.
+    </div>
+
+    <div class="co-block">
+      <h4>🍱 Build your catering order</h4>
+      <p style="font-size:12.5px;color:var(--ink-soft);margin-bottom:10px">Choose a tray size and add each dish to your cart. Catering checks out and pays together with everything else (Small $65 · Medium $100 · Large $140).</p>
+      <div id="cateringMenu"></div>
+    </div>
+
+
+  </div>
+</section>
+
+<!-- ======================= LOYALTY ======================= -->
+<section class="view" id="view-loyalty" aria-label="Loyalty rewards">
+  <div class="wrap section-pad">
+    <span class="eyebrow">Huế Rewards</span>
+    <div class="title-row"><h2>Loyalty</h2></div>
+    <div class="gold-rule"></div>
+
+    <div class="loy-card">
+      <div class="lab">Your points</div>
+      <div class="bal" id="loyBal">0</div>
+      <div class="who" id="loyWho">Sign up to start earning</div>
+    </div>
+
+    <div class="loy-steps">
+      <div class="lstep"><div class="n">1</div><div><div class="h">Join free</div><div class="d">Create an account in seconds to start tracking your points.</div></div></div>
+      <div class="lstep"><div class="n">2</div><div><div class="h">Earn as you order</div><div class="d">1 point for every $1 you spend, added automatically at checkout.</div></div></div>
+      <div class="lstep"><div class="n">3</div><div><div class="h">Redeem rewards</div><div class="d">100 points = a free Bánh Mì of your choice, applied at checkout.</div></div></div>
+    </div>
+
+    <div id="loySignedOut">
+      <button class="btn-full" id="loyJoinBtn">Sign up — start earning</button>
+      <button class="btn-ghost" id="loyLoginBtn">I already have an account</button>
+    </div>
+    <div id="loySignedIn" style="display:none">
+      <button class="btn-ghost" id="loyLogoutBtn">Log out</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ======================= FLOATING CART BAR ======================= -->
+<div class="cartbar" id="cartBar">
+  <div class="cartbar__inner">
+    <span class="cartbar__count" id="cartBarCount">0</span>
+    <div class="cartbar__txt">items in your cart<b id="cartBarTotal">$0.00</b></div>
+    <button class="cartbar__go" id="cartBarGo">View cart</button>
+  </div>
+</div>
+
+<!-- ======================= TAB BAR ======================= -->
+<nav class="tabbar" aria-label="Main navigation">
+  <button class="tab on" data-go="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</button>
+  <button class="tab" data-go="order"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16M4 12h16M4 20h16"/><circle cx="8" cy="4" r="1.3" fill="currentColor"/><circle cx="14" cy="12" r="1.3" fill="currentColor"/><circle cx="10" cy="20" r="1.3" fill="currentColor"/></svg>Order</button>
+  <button class="tab" data-go="catering"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v3M7 8h10l-1 5H8L7 8z"/><path d="M6 13h12l1 8H5l1-8z"/></svg>Catering</button>
+  <button class="tab" data-go="loyalty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3l2.6 5.6L21 9.3l-4.5 4.2 1.2 6.1L12 16.8 6.3 19.6l1.2-6.1L3 9.3l6.4-.7z"/></svg>Rewards</button>
+</nav>
+
+<!-- ======================= OVERLAY + SHEETS ======================= -->
+<div class="overlay" id="overlay"></div>
+
+<!-- CART SHEET -->
+<div class="sheet" id="cartSheet" role="dialog" aria-label="Your cart">
+  <div class="sheet__grab"></div>
+  <div class="sheet__head"><h3>Your order</h3><button class="sheet__close" data-close>×</button></div>
+  <div class="sheet__pad" id="cartBody"></div>
+</div>
+
+<!-- CHECKOUT SHEET -->
+<div class="sheet" id="coSheet" role="dialog" aria-label="Checkout">
+  <div class="sheet__grab"></div>
+  <div class="sheet__head"><h3>Checkout</h3><button class="sheet__close" data-close>×</button></div>
+  <div class="sheet__pad" id="coBody"></div>
+</div>
+
+<!-- ACCOUNT SHEET -->
+<div class="sheet" id="acctSheet" role="dialog" aria-label="Account">
+  <div class="sheet__grab"></div>
+  <div class="sheet__head"><h3 id="acctTitle">Join Huế Rewards</h3><button class="sheet__close" data-close>×</button></div>
+  <div class="sheet__pad" id="acctBody"></div>
+</div>
+
+<!-- CONFIRM SHEET -->
+<div class="sheet" id="confirmSheet" role="dialog" aria-label="Order confirmed">
+  <div class="sheet__grab"></div>
+  <div id="confirmBody"></div>
+</div>
+
+<!-- PAYMENT SHEET -->
+<div class="sheet" id="paySheet" role="dialog" aria-label="Payment">
+  <div class="sheet__grab"></div>
+  <div id="payBody"></div>
+</div>
+
+<!-- CONTACT SHEET -->
+<div class="sheet" id="contactSheet" role="dialog" aria-label="Contact us">
+  <div class="sheet__grab"></div>
+  <div class="sheet__head"><h3>Contact us</h3><button class="sheet__close" data-close>&times;</button></div>
+  <div class="sheet__pad">
+    <p class="muted">Questions, catering, or feedback? Send us a note and we will get back to you.</p>
+    <label class="fld"><span>Name</span><input id="ctName" type="text" autocomplete="name"></label>
+    <label class="fld"><span>Email</span><input id="ctEmail" type="email" autocomplete="email" inputmode="email"></label>
+    <label class="fld"><span>Phone (optional)</span><input id="ctPhone" type="tel" autocomplete="tel" inputmode="tel"></label>
+    <label class="fld"><span>Message</span><textarea id="ctMsg" rows="4"></textarea></label>
+    <button class="place" id="ctSend" style="color:#1a1a1a">Send message</button>
+    <small class="lead__note" id="ctStatus"></small>
+  </div>
+</div>
+
+<!-- PRIVACY SHEET -->
+<div class="sheet" id="privacySheet" role="dialog" aria-label="Privacy Policy">
+  <div class="sheet__grab"></div>
+  <div class="sheet__head"><h3>Privacy Policy</h3><button class="sheet__close" data-close>&times;</button></div>
+  <div class="sheet__pad legal">
+    <p class="upd">Last updated: June 2026</p>
+    <p>Hu&#7871; Vietnamese Cuisine ("we", "us") operates huevietnamesecuisine.com. This policy explains what we collect and how we use it.</p>
+    <h4>What we collect</h4>
+    <ul>
+      <li>Order details you provide at checkout (name, email, phone, items, pickup time).</li>
+      <li>Contact-form and email-signup submissions (name, email, phone, message).</li>
+      <li>Basic, aggregated analytics about site visits if you accept analytics cookies.</li>
+    </ul>
+    <h4>Payments</h4>
+    <p>Card and wallet payments are processed by our payment providers (Stripe and PayPal). We do not store full card numbers on our servers.</p>
+    <h4>How we use it</h4>
+    <ul>
+      <li>To prepare and fulfill your pickup orders and respond to your messages.</li>
+      <li>To send the coupon or freebie you requested, and occasional specials (you can opt out anytime).</li>
+      <li>To understand site traffic and improve the experience.</li>
+    </ul>
+    <h4>Sharing</h4>
+    <p>We share data only with service providers that help us run the site and orders (for example payment, email, and hosting providers). We do not sell your personal information.</p>
+    <h4>Your choices</h4>
+    <p>You can decline analytics cookies in the banner, unsubscribe from emails using the link in any message, or contact us to access or delete your information.</p>
+    <h4>Contact</h4>
+    <p>Email huevietnamesecuisine@gmail.com or call (206) 693-3311.</p>
+  </div>
+</div>
+
+<!-- TERMS SHEET -->
+<div class="sheet" id="termsSheet" role="dialog" aria-label="Terms of Service">
+  <div class="sheet__grab"></div>
+  <div class="sheet__head"><h3>Terms of Service</h3><button class="sheet__close" data-close>&times;</button></div>
+  <div class="sheet__pad legal">
+    <p class="upd">Last updated: June 2026</p>
+    <h4>Orders &amp; pickup</h4>
+    <p>All orders are for pickup at 6538 4th Ave S, Suite 1, Seattle, WA 98108 during business hours (Mon&ndash;Sat, 10 AM &ndash; 8 PM). Prep and pickup times shown at checkout are estimates.</p>
+    <h4>Pricing &amp; taxes</h4>
+    <p>Prices are in U.S. dollars and may change. Applicable Washington sales tax and any stated service fee are added at checkout.</p>
+    <h4>Payment</h4>
+    <p>Payment is collected at checkout through our payment providers. Your order is confirmed only after payment is approved.</p>
+    <h4>Promotions</h4>
+    <p>Promotions (such as Buy 10 Get 1 Free B&aacute;nh M&igrave;, Happy Hour, and rewards) follow the terms shown on the site and cannot be combined unless stated. We may modify or end promotions at any time.</p>
+    <h4>Cancellations</h4>
+    <p>If you need to change or cancel an order, please call us as soon as possible at (206) 693-3311.</p>
+    <h4>Contact</h4>
+    <p>Questions about these terms? Email huevietnamesecuisine@gmail.com.</p>
+  </div>
+</div>
+
+<!-- AI & TRANSPARENCY SHEET -->
+<div class="sheet" id="aiSheet" role="dialog" aria-label="AI and Transparency Disclosure">
+  <div class="sheet__grab"></div>
+  <div class="sheet__head"><h3>AI &amp; Transparency</h3><button class="sheet__close" data-close>&times;</button></div>
+  <div class="sheet__pad legal">
+    <p class="upd">Last updated: June 2026</p>
+    <p>We are a small family restaurant. To keep our prices low and serve you faster, this
+       website was designed and built with the help of generative AI tools (including
+       Anthropic&rsquo;s Claude). We believe in being open about that.</p>
+    <h4>Images &amp; illustrations</h4>
+    <p>Some visuals on this site are simple icons or may be AI-generated or AI-enhanced for
+       illustration only. The actual ingredients, portion sizes, and appearance of our food
+       follow our real recipes and may vary with fresh, seasonal ingredients. Any food image
+       is an artistic representation, not a guarantee of exact appearance. For a true look at
+       our daily kitchen, see our latest social posts or visit us.</p>
+    <h4>Real people, real food</h4>
+    <p>AI helps power our website and design. Everything that matters &mdash; cooking, food
+       quality, customer service, and order pickup &mdash; is handled by real people in our
+       kitchen. We do not use AI to depict real, identifiable individuals without their consent.</p>
+    <h4>Accuracy</h4>
+    <p>Menu items, prices, and hours are kept as accurate as we can. If anything looks off,
+       please tell us and we will correct it.</p>
+    <h4>Questions</h4>
+    <p>Email huevietnamesecuisine@gmail.com or call (206) 693-3311.</p>
+  </div>
+</div>
+
+<!-- COOKIE CONSENT -->
+<div class="cookie" id="cookieBar" role="dialog" aria-label="Cookie notice">
+  <span>We use cookies to run this site, remember your cart, and &mdash; if you allow &mdash; measure traffic. See our <a href="#" data-sheet="privacySheet">Privacy Policy</a>.</span>
+  <div class="cookie__btns">
+    <button id="cookieDecline" class="cookie__b cookie__b--ghost">Decline</button>
+    <button id="cookieAccept" class="cookie__b">Accept</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="script.js" defer></script>
+</body>
+</html>

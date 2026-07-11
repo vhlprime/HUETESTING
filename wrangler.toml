@@ -1,0 +1,15 @@
+# wrangler.toml — Cloudflare Pages config for Huế Vietnamese Cuisine
+# Docs: https://developers.cloudflare.com/pages/functions/wrangler-configuration/
+#
+# IMPORTANT: the command is  npx wrangler pages deploy .  — NOT  npx wrangler deploy
+# (that second one is for Workers and creates a random-named Worker like "lucky-dream-accb"
+# with your functions/ folder ignored — that is what happened last time.)
+
+name = "huevietnamesecuisine"
+compatibility_date = "2026-07-06"
+compatibility_flags = ["nodejs_compat"]
+
+# The folder of static files to upload. "." = this project root.
+# functions/ is auto-detected and compiled into live endpoints (NOT served as static files).
+# node_modules/.git/.wrangler are auto-excluded.
+pages_build_output_dir = "."

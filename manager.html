@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow"><!-- keep the manager page out of search engines -->
+<title>Manager · Huế Vietnamese Cuisine</title>
+<style>
+  :root{--burgundy:#7A1420;--gold:#B8860B;--ink:#161311;--soft:#6a5f5a;--line:#e8dfd8;--ok:#1f7a4d}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#fff;color:var(--ink)}
+  header{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;z-index:5}
+  header h1{font-size:16px;margin:0;color:var(--burgundy)}
+  header .who{font-size:12px;color:var(--soft)}
+  button{font:inherit;cursor:pointer;border-radius:9px;border:1px solid var(--line);background:#fff;padding:8px 13px}
+  button.primary{background:var(--burgundy);color:#fff;border-color:var(--burgundy)}
+  .wrap{max-width:1100px;margin:0 auto;padding:16px}
+  /* login */
+  .login{max-width:360px;margin:12vh auto;padding:26px;border:1px solid var(--line);border-radius:16px}
+  .login h2{margin:0 0 4px;color:var(--burgundy)}
+  .login p{margin:0 0 18px;color:var(--soft);font-size:13px}
+  .login input{width:100%;padding:12px;margin-bottom:12px;border:1px solid var(--line);border-radius:9px;font-size:16px}
+  .login button{width:100%}
+  .err{color:#b3261e;font-size:13px;min-height:18px;margin-bottom:8px}
+  /* tabs */
+  .tabs{display:flex;gap:8px;margin-bottom:16px}
+  .tabs button.on{background:var(--burgundy);color:#fff;border-color:var(--burgundy)}
+  /* orders */
+  .order{border:1px solid var(--line);border-radius:13px;padding:14px;margin-bottom:12px}
+  .order__top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .order__code{font-weight:700}
+  .badge{font-size:11px;padding:3px 9px;border-radius:999px;font-weight:600}
+  .badge.paid{background:#e7f5ee;color:var(--ok)}
+  .badge.pending{background:#fdf0e7;color:#B23B3B}
+  .order__meta{font-size:12.5px;color:var(--soft);margin:5px 0}
+  .order__items{font-size:13.5px;margin:8px 0 0;padding-left:18px}
+  .order__total{text-align:right;font-weight:700;margin-top:6px}
+  .muted{color:var(--soft);font-size:13px;text-align:center;padding:30px}
+  .email{border:1px solid var(--line);border-radius:11px;padding:12px;margin-bottom:10px}
+  .email__from{font-weight:600;font-size:13.5px}
+  .email__sub{font-size:13px;margin:3px 0}
+  .email__body{font-size:12.5px;color:var(--soft);white-space:pre-wrap;max-height:120px;overflow:auto}
+  .refresh{font-size:12px;color:var(--soft)}
+</style>
+</head>
+<body>
+<!-- LOGIN VIEW -->
+<div id="loginView" class="login">
+  <h2>Manager Login</h2>
+  <p>Huế Vietnamese Cuisine · staff only</p>
+  <div class="err" id="loginErr"></div>
+  <input id="u" type="text" placeholder="Username" autocomplete="username">
+  <input id="p" type="password" placeholder="Password" autocomplete="current-password">
+  <button class="primary" id="loginBtn">Log in</button>
+</div>
+
+<!-- DASHBOARD VIEW -->
+<div id="dashView" style="display:none">
+  <header>
+    <h1>Huế · Manager</h1>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span class="who" id="who"></span>
+      <button id="logoutBtn">Log out</button>
+    </div>
+  </header>
+  <div class="wrap">
+    <div class="tabs">
+      <button data-tab="orders" class="on">Orders</button>
+      <button data-tab="emails">Inbox</button>
+      <button data-tab="payroll">Payroll</button>
+      <span class="refresh" id="refreshNote" style="margin-left:auto;align-self:center"></span>
+    </div>
+    <div id="ordersPane"><div class="muted">Loading orders…</div></div>
+    <div id="emailsPane" style="display:none"><div class="muted">Loading inbox…</div></div>
+    <div id="payrollPane" style="display:none">
+      <div id="payrollList"><div class="muted">Loading hours…</div></div>
+      <div class="order" style="margin-top:16px">
+        <h3 style="margin:0 0 10px;color:var(--burgundy);font-size:14px">Add a staff member</h3>
+        <div class="err" id="staffErr"></div>
+        <input id="nsUser" placeholder="username (lowercase)" style="width:100%;padding:9px;margin-bottom:8px;border:1px solid var(--line);border-radius:8px">
+        <input id="nsName" placeholder="display name" style="width:100%;padding:9px;margin-bottom:8px;border:1px solid var(--line);border-radius:8px">
+        <input id="nsPass" type="text" placeholder="temp password (8+ chars)" style="width:100%;padding:9px;margin-bottom:8px;border:1px solid var(--line);border-radius:8px">
+        <input id="nsRate" type="number" step="0.01" placeholder="hourly rate (optional)" style="width:100%;padding:9px;margin-bottom:8px;border:1px solid var(--line);border-radius:8px">
+        <button class="primary" id="addStaffBtn" style="width:100%;padding:11px">Create staff login</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const money = c => '$' + ((c||0)/100).toFixed(2);
+let pollTimer = null;
+
+async function api(path, opts){ const r = await fetch(path, {credentials:'same-origin', ...opts}); return {ok:r.ok, status:r.status, data: await r.json().catch(()=>({}))}; }
+
+async function checkSession(){
+  const {data} = await api('/api/admin/session');
+  if(data.authed){ showDash(data.user); } else { showLogin(); }
+}
+function showLogin(){ $('#loginView').style.display='block'; $('#dashView').style.display='none'; if(pollTimer) clearInterval(pollTimer); }
+function showDash(user){
+  $('#loginView').style.display='none'; $('#dashView').style.display='block';
+  $('#who').textContent = user ? ('Signed in as '+user) : '';
+  loadOrders(); 
+  pollTimer = setInterval(()=>{ if($('[data-tab=orders]').classList.contains('on')) loadOrders(true); }, 20000); // live refresh every 20s
+}
+
+$('#loginBtn').addEventListener('click', async ()=>{
+  $('#loginErr').textContent='';
+  const {ok,data} = await api('/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:$('#u').value,password:$('#p').value})});
+  if(ok){ $('#p').value=''; checkSession(); } else { $('#loginErr').textContent = data.error || 'Login failed.'; }
+});
+$('#p').addEventListener('keydown', e=>{ if(e.key==='Enter') $('#loginBtn').click(); });
+$('#logoutBtn').addEventListener('click', async ()=>{ await api('/api/admin/logout',{method:'POST'}); showLogin(); });
+
+document.querySelectorAll('.tabs button[data-tab]').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.tabs button[data-tab]').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  const t=b.dataset.tab;
+  $('#ordersPane').style.display = t==='orders'?'block':'none';
+  $('#emailsPane').style.display = t==='emails'?'block':'none';
+  $('#payrollPane').style.display = t==='payroll'?'block':'none';
+  if(t==='orders') loadOrders(); else if(t==='emails') loadEmails(); else loadPayroll();
+}));
+
+async function loadOrders(silent){
+  if(!silent) $('#ordersPane').innerHTML='<div class="muted">Loading orders…</div>';
+  const {ok,data} = await api('/api/admin/orders?limit=50');
+  if(!ok){ if(!silent) $('#ordersPane').innerHTML='<div class="muted">Could not load orders.</div>'; return; }
+  const list = data.orders||[];
+  $('#refreshNote').textContent = 'Updated '+new Date().toLocaleTimeString();
+  if(!list.length){ $('#ordersPane').innerHTML='<div class="muted">No orders yet.</div>'; return; }
+  $('#ordersPane').innerHTML = list.map(o=>{
+    const items=(o.items||[]).map(it=>`<li>${it.qty}× ${escapeHtml(it.name||'')}${it.opt?' — '+escapeHtml(it.opt):''}</li>`).join('');
+    const cents = o.amount_cents!=null?o.amount_cents:(o.totals&&o.totals.total?Math.round(o.totals.total*100):0);
+    return `<div class="order">
+      <div class="order__top"><span class="order__code">${escapeHtml(o.code||'')}</span>
+        <span class="badge ${o.status==='paid'?'paid':'pending'}">${o.status||'pending'}</span></div>
+      <div class="order__meta">${escapeHtml(o.customer_name||'—')} · ${escapeHtml(o.email||'—')} · ${escapeHtml(o.phone||'—')} · ${escapeHtml(o.method||'')}</div>
+      <div class="order__meta">Pickup: ${escapeHtml(o.pickup||'ASAP')} · ${new Date(o.created_at).toLocaleString()}</div>
+      <ul class="order__items">${items}</ul>
+      <div class="order__total">${money(cents)}</div>
+    </div>`;
+  }).join('');
+}
+
+async function loadEmails(){
+  $('#emailsPane').innerHTML='<div class="muted">Loading inbox…</div>';
+  const {ok,data} = await api('/api/admin/emails?limit=50');
+  if(!ok){ $('#emailsPane').innerHTML='<div class="muted">Could not load inbox.</div>'; return; }
+  const list=data.emails||[];
+  if(!list.length){ $('#emailsPane').innerHTML='<div class="muted">No emails yet. (Requires the inbound-email Worker.)</div>'; return; }
+  $('#emailsPane').innerHTML = list.map(e=>`<div class="email">
+    <div class="email__from">${escapeHtml(e.from_address||'')} <span style="color:#999;font-weight:400">→ ${escapeHtml(e.to_address||'')}</span></div>
+    <div class="email__sub">${escapeHtml(e.subject||'(no subject)')}</div>
+    <div class="email__body">${escapeHtml((e.text_body||'').slice(0,600))}</div>
+    <div style="font-size:11px;color:#999;margin-top:5px">${new Date(e.received_at).toLocaleString()}</div>
+  </div>`).join('');
+}
+
+async function loadPayroll(){
+  $('#payrollList').innerHTML='<div class="muted">Loading hours…</div>';
+  const {ok,data}=await api('/api/admin/payroll?days=7');
+  if(!ok){ $('#payrollList').innerHTML='<div class="muted">Could not load payroll.</div>'; return; }
+  const s=data.staff||[];
+  if(!s.length){ $('#payrollList').innerHTML='<div class="muted">No staff yet. Add someone below.</div>'; return; }
+  $('#payrollList').innerHTML='<div class="order"><h3 style="margin:0 0 10px;color:var(--burgundy);font-size:14px">Hours — last 7 days</h3>'+
+    s.map(x=>`<div class="wkrow" style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f3ece6;font-size:13.5px">
+      <span>${escapeHtml(x.name)}${x.clockedInNow?' <span class="badge paid" style="font-size:10px">on now</span>':''}</span>
+      <span>${x.hours}h${x.pay!=null?' · $'+x.pay:''}</span></div>`).join('')+'</div>';
+}
+document.addEventListener('click',async(e)=>{
+  if(e.target && e.target.id==='addStaffBtn'){
+    $('#staffErr').textContent='';
+    const body={username:$('#nsUser').value,display_name:$('#nsName').value,password:$('#nsPass').value,hourly_rate:$('#nsRate').value};
+    const {ok,data}=await api('/api/admin/add-staff',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(ok){ $('#nsUser').value=$('#nsName').value=$('#nsPass').value=$('#nsRate').value=''; loadPayroll(); }
+    else { $('#staffErr').textContent=data.error||'Could not create staff.'; }
+  }
+});
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+checkSession();
+</script>
+</body>
+</html>

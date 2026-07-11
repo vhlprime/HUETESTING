@@ -1,0 +1,4 @@
+# Copy to ".dev.vars" (no extension) for local testing only. Git-ignored.
+SUPABASE_URL="https://YOUR-PROJECT.supabase.co"
+SUPABASE_SERVICE_ROLE_KEY=""
+FORWARD_TO="huevietnamesecuisine@gmail.com"

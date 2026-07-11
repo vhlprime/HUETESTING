@@ -1,0 +1,16 @@
+{
+  "name": "huevietnamesecuisine-inbound-email",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Standalone Cloudflare Worker (NOT part of the main Pages site) that receives email sent to your domain, logs it to Supabase, and forwards a copy to your real inbox.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "postal-mime": "^2.2.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

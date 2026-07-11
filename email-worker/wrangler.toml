@@ -1,0 +1,14 @@
+# wrangler.toml — for the INBOUND EMAIL WORKER only.
+#
+# IMPORTANT: this is a completely separate Cloudflare project from your
+# website (hue-site). Your website is a *Pages* project, deployed with
+#   npx wrangler pages deploy .
+# This folder is a plain *Worker*, deployed from INSIDE THIS FOLDER with
+#   npx wrangler deploy
+# Do not run these commands from the wrong folder, and do not mix them up —
+# that exact mixup caused the 404 problem we fixed earlier this week.
+
+name = "huevietnamesecuisine-inbound-email"
+main = "src/index.js"
+compatibility_date = "2026-07-08"
+compatibility_flags = ["nodejs_compat"]

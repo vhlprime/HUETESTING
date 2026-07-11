@@ -1,0 +1,22 @@
+{
+  "name": "huevietnamesecuisine",
+  "version": "1.0.0",
+  "description": "Huế Vietnamese Cuisine — online ordering site (Cloudflare Pages + Functions)",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler pages dev",
+    "deploy": "wrangler pages deploy",
+    "tail": "wrangler pages deployment tail"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
+
+{
+  "homepage": "https://<huevietnamesecuisine.com>.github.io/<HUETESTING>",
+  "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
+  }
+}

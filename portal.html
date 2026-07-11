@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Staff Portal · Huế Vietnamese Cuisine</title>
+<style>
+  :root{--burgundy:#7A1420;--gold:#B8860B;--ink:#161311;--soft:#6a5f5a;--line:#e8dfd8;--ok:#1f7a4d}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#fff;color:var(--ink)}
+  .wrap{max-width:460px;margin:0 auto;padding:20px}
+  h1{color:var(--burgundy);font-size:19px;margin:6px 0 2px}
+  .sub{color:var(--soft);font-size:13px;margin-bottom:20px}
+  input{width:100%;padding:13px;margin-bottom:12px;border:1px solid var(--line);border-radius:10px;font-size:16px}
+  button{font:inherit;cursor:pointer;border-radius:11px;border:none;font-weight:600}
+  .primary{width:100%;background:var(--burgundy);color:#fff;padding:14px;font-size:16px}
+  .err{color:#b3261e;font-size:13px;min-height:18px}
+  .clockcard{border:1px solid var(--line);border-radius:16px;padding:24px;text-align:center;margin-bottom:16px}
+  .status{font-size:14px;color:var(--soft)}
+  .timer{font-size:40px;font-weight:700;letter-spacing:.02em;margin:10px 0;font-variant-numeric:tabular-nums}
+  .timer.off{color:var(--soft)}
+  .timer.on{color:var(--ok)}
+  .bigbtn{width:100%;padding:18px;font-size:18px;color:#fff;margin-top:8px}
+  .bigbtn.in{background:var(--ok)}
+  .bigbtn.out{background:#B23B3B}
+  .week{border:1px solid var(--line);border-radius:14px;padding:16px}
+  .week h3{margin:0 0 10px;font-size:14px;color:var(--burgundy)}
+  .wkrow{display:flex;justify-content:space-between;font-size:13.5px;padding:5px 0;border-bottom:1px solid #f3ece6}
+  .wktotal{display:flex;justify-content:space-between;font-weight:700;padding-top:10px;font-size:15px}
+  .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+  .link{background:none;color:var(--soft);font-size:13px;text-decoration:underline;padding:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <!-- LOGIN -->
+  <div id="loginView">
+    <h1>Staff Portal</h1>
+    <div class="sub">Huế Vietnamese Cuisine · clock in & out</div>
+    <div class="err" id="err"></div>
+    <input id="u" type="text" placeholder="Username" autocomplete="username">
+    <input id="p" type="password" placeholder="Password" autocomplete="current-password">
+    <button class="primary" id="loginBtn">Log in</button>
+  </div>
+
+  <!-- CLOCK -->
+  <div id="clockView" style="display:none">
+    <div class="top">
+      <div><h1 id="hi" style="margin:0"></h1><div class="sub" id="today" style="margin:0"></div></div>
+      <button class="link" id="logout">Log out</button>
+    </div>
+    <div class="clockcard">
+      <div class="status" id="statusLine">Not clocked in</div>
+      <div class="timer off" id="timer">00:00:00</div>
+      <button class="bigbtn in" id="toggle">Clock In</button>
+    </div>
+    <div class="week">
+      <h3>This week</h3>
+      <div id="weekRows"></div>
+      <div class="wktotal"><span>Total</span><span id="weekTotal">0h 00m</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+let openSince=null, tick=null;
+async function api(p,o){const r=await fetch(p,{credentials:'same-origin',...o});return{ok:r.ok,data:await r.json().catch(()=>({}))};}
+function fmt(ms){const s=Math.floor(ms/1000);const h=String(Math.floor(s/3600)).padStart(2,'0');const m=String(Math.floor(s%3600/60)).padStart(2,'0');const ss=String(s%60).padStart(2,'0');return `${h}:${m}:${ss}`;}
+function hm(mins){return `${Math.floor(mins/60)}h ${String(mins%60).padStart(2,'0')}m`;}
+
+async function refresh(){
+  const {data}=await api('/api/staff/status');
+  if(!data.authed){ $('#loginView').style.display='block'; $('#clockView').style.display='none'; if(tick)clearInterval(tick); return; }
+  $('#loginView').style.display='none'; $('#clockView').style.display='block';
+  $('#hi').textContent='Hi, '+(data.name||'')+' 👋';
+  $('#today').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'});
+  // week list
+  const rows=(data.recent||[]).filter(s=>s.minutes).map(s=>`<div class="wkrow"><span>${new Date(s.clock_in).toLocaleDateString(undefined,{weekday:'short',month:'numeric',day:'numeric'})}</span><span>${hm(s.minutes)}</span></div>`).join('');
+  $('#weekRows').innerHTML=rows||'<div class="sub">No completed shifts yet this week.</div>';
+  $('#weekTotal').textContent=hm(data.weekMinutes||0);
+  // clock state
+  if(tick)clearInterval(tick);
+  if(data.open){
+    openSince=new Date(data.open.since);
+    $('#statusLine').textContent='Clocked in since '+openSince.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+    $('#timer').className='timer on';
+    const upd=()=>{$('#timer').textContent=fmt(Date.now()-openSince);}; upd(); tick=setInterval(upd,1000);
+    $('#toggle').textContent='Clock Out'; $('#toggle').className='bigbtn out';
+  } else {
+    openSince=null;
+    $('#statusLine').textContent='Not clocked in';
+    $('#timer').className='timer off'; $('#timer').textContent='00:00:00';
+    $('#toggle').textContent='Clock In'; $('#toggle').className='bigbtn in';
+  }
+}
+
+$('#loginBtn').addEventListener('click',async()=>{
+  $('#err').textContent='';
+  const {ok,data}=await api('/api/staff/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:$('#u').value.trim().toLowerCase(),password:$('#p').value})});
+  if(ok){ $('#p').value=''; refresh(); } else { $('#err').textContent=data.error||'Login failed.'; }
+});
+$('#p').addEventListener('keydown',e=>{if(e.key==='Enter')$('#loginBtn').click();});
+$('#logout').addEventListener('click',async()=>{await api('/api/staff/logout',{method:'POST'});refresh();});
+$('#toggle').addEventListener('click',async()=>{
+  $('#toggle').disabled=true;
+  const path=openSince?'/api/staff/clock-out':'/api/staff/clock-in';
+  await api(path,{method:'POST'});
+  $('#toggle').disabled=false; refresh();
+});
+refresh();
+</script>
+</body>
+</html>
