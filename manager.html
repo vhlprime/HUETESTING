@@ -1,4 +1,5 @@
 
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -53,7 +54,23 @@
   .inv .row.total{font-size:15px;font-weight:700;border-top:1px solid #e5d9cf;margin-top:6px;padding-top:8px}
   .inv .close{position:absolute;top:12px;right:14px;font-size:22px;background:none;border:none;color:var(--soft)}
   .inv .actions{display:flex;gap:8px;margin-top:14px}
-  @media print{ body>*{display:none!important} .inv-overlay{display:flex!important;position:static;background:none} .inv{box-shadow:none;max-height:none} .inv .actions,.inv .close{display:none!important} }
+  /* Thermal receipt printing — Epson roll widths 57.5 / 69.5 / 76mm.
+     Content column is 52mm wide so it fits the NARROWEST roll with margin;
+     on wider rolls it simply prints with extra blank edge. */
+  @media print{
+    @page{ size:76mm auto; margin:2mm }
+    body>*{display:none!important}
+    .inv-overlay{display:block!important;position:static;background:none;padding:0}
+    .inv{box-shadow:none;border:none;border-radius:0;max-height:none;width:52mm;max-width:52mm;padding:0;margin:0;
+         font-family:"Courier New",monospace;color:#000}
+    .inv h2{font-size:13px;margin:0;text-align:center}
+    .inv .sub{font-size:10px;text-align:center;margin-bottom:4px;color:#000}
+    .inv .block{background:none;border-top:1px dashed #000;border-bottom:1px dashed #000;border-radius:0;padding:4px 0;margin:6px 0}
+    .inv .row{font-size:10.5px}
+    .inv .row.total{font-size:12px;border-top:1px dashed #000}
+    .inv div,.inv p{font-size:10.5px;line-height:1.45}
+    .inv .actions,.inv .close{display:none!important}
+  }
 </style>
 </head>
 <body>
