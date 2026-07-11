@@ -6,7 +6,7 @@
 //   URL: https://huevietnamesecuisine.com/api/paypal/webhook
 //   Event: PAYMENT.CAPTURE.COMPLETED
 //   Copy the Webhook ID -> Cloudflare secret PAYPAL_WEBHOOK_ID
-import { ppFetch } from './_paypal.js';
+import { ppFetch } from '../_paypal.js';
 import { claimEvent, markPaidOnce, claimNotify, sb } from '../_db.js';
 import { sendOrderEmails, sendOrderSMS } from '../_notify.js';
 
