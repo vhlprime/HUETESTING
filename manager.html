@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -41,6 +42,18 @@
   .email__sub{font-size:13px;margin:3px 0}
   .email__body{font-size:12.5px;color:var(--soft);white-space:pre-wrap;max-height:120px;overflow:auto}
   .refresh{font-size:12px;color:var(--soft)}
+  .order{cursor:pointer}
+  .order:hover{border-color:var(--gold)}
+  .inv-overlay{position:fixed;inset:0;background:rgba(22,19,17,.45);z-index:90;display:flex;align-items:center;justify-content:center;padding:16px}
+  .inv{background:#fff;border-radius:16px;max-width:520px;width:100%;max-height:90vh;overflow:auto;padding:24px;position:relative}
+  .inv h2{color:var(--burgundy);margin:0 0 2px}
+  .inv .sub{color:var(--soft);font-size:13px;margin-bottom:12px}
+  .inv .block{background:#FBF6EF;border-radius:12px;padding:14px 16px;margin:14px 0}
+  .inv .row{display:flex;justify-content:space-between;font-size:13.5px;padding:2px 0}
+  .inv .row.total{font-size:15px;font-weight:700;border-top:1px solid #e5d9cf;margin-top:6px;padding-top:8px}
+  .inv .close{position:absolute;top:12px;right:14px;font-size:22px;background:none;border:none;color:var(--soft)}
+  .inv .actions{display:flex;gap:8px;margin-top:14px}
+  @media print{ body>*{display:none!important} .inv-overlay{display:flex!important;position:static;background:none} .inv{box-shadow:none;max-height:none} .inv .actions,.inv .close{display:none!important} }
 </style>
 </head>
 <body>
@@ -49,7 +62,7 @@
   <h2>Manager Login</h2>
   <p>Huế Vietnamese Cuisine · staff only</p>
   <div class="err" id="loginErr"></div>
-  <input id="u" type="text" placeholder="Username" autocomplete="username">
+  <input id="u" type="text" placeholder="Username" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false">
   <input id="p" type="password" placeholder="Password" autocomplete="current-password">
   <button class="primary" id="loginBtn">Log in</button>
 </div>
@@ -77,7 +90,7 @@
       <div class="order" style="margin-top:16px">
         <h3 style="margin:0 0 10px;color:var(--burgundy);font-size:14px">Add a staff member</h3>
         <div class="err" id="staffErr"></div>
-        <input id="nsUser" placeholder="username (lowercase)" style="width:100%;padding:9px;margin-bottom:8px;border:1px solid var(--line);border-radius:8px">
+        <input id="nsUser" placeholder="username (lowercase)" autocapitalize="off" autocorrect="off" spellcheck="false" style="width:100%;padding:9px;margin-bottom:8px;border:1px solid var(--line);border-radius:8px">
         <input id="nsName" placeholder="display name" style="width:100%;padding:9px;margin-bottom:8px;border:1px solid var(--line);border-radius:8px">
         <input id="nsPass" type="text" placeholder="temp password (8+ chars)" style="width:100%;padding:9px;margin-bottom:8px;border:1px solid var(--line);border-radius:8px">
         <input id="nsRate" type="number" step="0.01" placeholder="hourly rate (optional)" style="width:100%;padding:9px;margin-bottom:8px;border:1px solid var(--line);border-radius:8px">
@@ -124,17 +137,19 @@ document.querySelectorAll('.tabs button[data-tab]').forEach(b=>b.addEventListene
   if(t==='orders') loadOrders(); else if(t==='emails') loadEmails(); else loadPayroll();
 }));
 
+let ORDERS = [];
 async function loadOrders(silent){
   if(!silent) $('#ordersPane').innerHTML='<div class="muted">Loading orders…</div>';
   const {ok,data} = await api('/api/admin/orders?limit=50');
   if(!ok){ if(!silent) $('#ordersPane').innerHTML='<div class="muted">Could not load orders.</div>'; return; }
   const list = data.orders||[];
+  ORDERS = list;
   $('#refreshNote').textContent = 'Updated '+new Date().toLocaleTimeString();
   if(!list.length){ $('#ordersPane').innerHTML='<div class="muted">No orders yet.</div>'; return; }
-  $('#ordersPane').innerHTML = list.map(o=>{
+  $('#ordersPane').innerHTML = list.map((o,i)=>{
     const items=(o.items||[]).map(it=>`<li>${it.qty}× ${escapeHtml(it.name||'')}${it.opt?' — '+escapeHtml(it.opt):''}</li>`).join('');
     const cents = o.amount_cents!=null?o.amount_cents:(o.totals&&o.totals.total?Math.round(o.totals.total*100):0);
-    return `<div class="order">
+    return `<div class="order" data-inv="${i}" title="Tap to view Detail Invoice">
       <div class="order__top"><span class="order__code">${escapeHtml(o.code||'')}</span>
         <span class="badge ${o.status==='paid'?'paid':'pending'}">${o.status||'pending'}</span></div>
       <div class="order__meta">${escapeHtml(o.customer_name||'—')} · ${escapeHtml(o.email||'—')} · ${escapeHtml(o.phone||'—')} · ${escapeHtml(o.method||'')}</div>
@@ -178,6 +193,45 @@ document.addEventListener('click',async(e)=>{
     if(ok){ $('#nsUser').value=$('#nsName').value=$('#nsPass').value=$('#nsRate').value=''; loadPayroll(); }
     else { $('#staffErr').textContent=data.error||'Could not create staff.'; }
   }
+});
+function money2(c){return '$'+((c||0)/100).toFixed(2);}
+function openInvoice(o){
+  const t=o.totals||{}; const cents=o.amount_cents!=null?o.amount_cents:(t.total?Math.round(t.total*100):0);
+  const items=(o.items||[]).map(it=>`<div style="font-size:14px;padding:2px 0">${it.qty}× ${escapeHtml(it.name||'')}${it.opt?' <span style="color:#8a7a76">('+escapeHtml(it.opt)+')</span>':''}</div>`).join('');
+  const row=(l,v,cls)=>`<div class="row ${cls||''}"><span>${l}</span><span>${v}</span></div>`;
+  let totals='';
+  if(t.sub!=null) totals+=row('Subtotal','$'+t.sub.toFixed(2));
+  if(t.hh>0) totals+=row('Happy Hour','−$'+t.hh.toFixed(2));
+  if(t.coup>0) totals+=row('Coupon (WELCOME5)','−$'+t.coup.toFixed(2));
+  if(t.fee>0) totals+=row('Processing fee','$'+t.fee.toFixed(2));
+  if(t.tax!=null) totals+=row('Tax','$'+t.tax.toFixed(2));
+  if(t.tip>0) totals+=row('Tip','$'+t.tip.toFixed(2));
+  totals+=row('Total',money2(cents),'total');
+  const el=document.createElement('div'); el.className='inv-overlay'; el.id='invOverlay';
+  el.innerHTML=`<div class="inv">
+    <button class="close" onclick="document.getElementById('invOverlay').remove()">×</button>
+    <h2>Detail Invoice</h2><div class="sub">${o.status==='paid'?'Paid Order':'New Order'}</div>
+    <div style="font-size:15px;font-weight:700;margin-bottom:10px">Order # ${escapeHtml(o.code||'')}</div>
+    <div style="font-size:14px;line-height:1.65">
+      <b>Customer:</b> ${escapeHtml(o.customer_name||'—')}<br>
+      <b>Phone:</b> ${escapeHtml(o.phone||'—')}<br>
+      <b>Email:</b> ${escapeHtml(o.email||'—')}<br>
+      <b>Pickup:</b> ${escapeHtml(o.pickup||'As soon as ready')}<br>
+      <b>Placed:</b> ${new Date(o.created_at).toLocaleString()}
+    </div>
+    <div class="block"><div style="font-weight:700;font-size:13px;color:var(--burgundy);margin-bottom:6px">Items</div>${items||'<div style="color:#8a7a76;font-size:13px">No item detail recorded</div>'}<div style="margin-top:10px">${totals}</div></div>
+    <div style="font-size:14px"><b>Payment:</b> ${o.status==='paid'?'Paid with '+escapeHtml(o.method||'—'):'Pending — '+escapeHtml(o.method||'')}</div>
+    <p style="font-size:12.5px;color:#8a7a76;margin-top:14px">Questions? Contact us at HueVietnameseCuisine@gmail.com or call us at +1 206-693-3311.</p>
+    <div class="actions">
+      <button class="primary" style="padding:10px 16px" onclick="window.print()">Print invoice</button>
+      <button style="padding:10px 16px" onclick="document.getElementById('invOverlay').remove()">Close</button>
+    </div></div>`;
+  el.addEventListener('click',e=>{ if(e.target===el) el.remove(); });
+  document.body.appendChild(el);
+}
+document.addEventListener('click',e=>{
+  const card=e.target.closest&&e.target.closest('.order[data-inv]');
+  if(card&&ORDERS[+card.dataset.inv]) openInvoice(ORDERS[+card.dataset.inv]);
 });
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 checkSession();
