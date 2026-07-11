@@ -20,7 +20,7 @@ const CFG = {
   // PAY: personal-payment addresses removed — checkout now charges through the PayPal/Stripe
   //      backend (/api/orders, /api/stripe/*), never a person-to-person transfer.
   PAY: { apple: '', paypal: '' },
-  STRIPE_PK: 'pk_test_51Tjmcw2M78EoYLEyghbHCJKOc939oU83Q3KKOXferWpnl5chPpOxr8PVvVqW6znX5yE8skZmOpsib5GVWybj9PWT00hkAwBHeJ', // publishable key — safe in front-end
+  STRIPE_PK: 'pk_live_51TjmcjRx781KXtvj6LayrNQCj1MkJzpwNRSUbBINWXLc6c36L3JqFpd6XQiDanvGKOVJKxeGhugoddnOuyktVnb100RfSnOw2g', // publishable key — safe in front-end
   API_BASE: '', // backend base URL; leave '' if the site and API share the same domain
   PAYMENTS_BACKEND: true, // live: /api/orders, /api/orders/:id/capture, /api/stripe/* are deployed
   TURNSTILE_SITEKEY: '1x00000000000000000000AA', // Cloudflare Turnstile TEST key — replace with your real site key
@@ -783,7 +783,7 @@ function placeOrder(method, ordOverride){
   const freeName = freePromo ? freeItemName(freeCode) : '';
   const usedPoints = freePromo==='points' ? CFG.REDEEM_POINTS : 0;
   const pickupTxt = pickupISO ? fmtSlot(new Date(pickupISO)) : ('~'+prepLabel(prepMinutes(t.sub)));
-  const ord = ordOverride || newOrderCode();
+  const ord = ordOverride || (payCtx && payCtx.code) || newOrderCode();
   const payAcct = method==='Apple Pay' ? CFG.PAY.apple : (method==='PayPal' ? CFG.PAY.paypal : '');
 
   if (account){ account.points = Math.max(0, account.points - usedPoints + t.earned); save(); }
@@ -814,7 +814,7 @@ function placeOrder(method, ordOverride){
   if (CFG.FORMS_BACKEND){
     fetch((CFG.API_BASE||'')+'/api/orders/notify',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        code: ord, method, total: t.total,
+        code: ord, method, total: t.total, payment_id: (payCtx && payCtx.payId) || null,
         items: lines.map(l=>({ qty:l.qty, name:l.name, opt:[l.size,l.sauce].filter(Boolean).join(' · '), lineTotal:l.unit*l.qty })),
         free: freeName || '',
         totals: { sub:t.sub, hh:t.hh, coup:t.coup, fee:t.fee, tax:t.tax, tip:t.tipAmt, total:t.total },
@@ -866,7 +866,7 @@ function openPayment(method){
   if(!phoneOk(contact.phone)){ showErr('coPhoneErr',true); bad=true; }
   if(bad){ toast('Add a valid email and phone'); return; }
   const t=calcTotals();
-  payCtx={ method, acct: method==='Apple Pay'?CFG.PAY.apple : method==='PayPal'?CFG.PAY.paypal : '', amount:t.total };
+  payCtx={ method, acct:'', amount:t.total, code:newOrderCode(), payId:null };
   closeSheets();
   if(method==='Apple Pay'){
     const fallback = ()=>{ if(CFG.PAYMENTS_BACKEND){ stripeCheckoutQR().catch(()=>{ renderApplePayUnavailable(); openSheet('paySheet'); }); } else { renderApplePayUnavailable(); openSheet('paySheet'); } };
@@ -891,11 +891,12 @@ async function startStripeApplePay(){
     if(!can || !can.applePay) return false;                              // Apple Pay unavailable here
     const res = await fetch((CFG.API_BASE||'')+'/api/stripe/payment-intent', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ total: t.total })
+      body: JSON.stringify(orderPayload())
     });
     if(!res.ok) return false;
     const { clientSecret } = await res.json();
     if(!clientSecret) return false;
+    if(payCtx) payCtx.payId = clientSecret.split('_secret')[0];   // pi_... id
     pr.on('paymentmethod', async (ev)=>{
       const r = await stripe.confirmCardPayment(clientSecret, { payment_method: ev.paymentMethod.id }, { handleActions:false });
       if(r.error){ ev.complete('fail'); toast('Payment failed — you were not charged'); return; }
@@ -949,6 +950,7 @@ async function stripeCheckoutQR(){
   const base=CFG.API_BASE||'';
   const r=await fetch(base+'/api/stripe/checkout-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(orderPayload())});
   if(!r.ok) throw new Error('session'); const d=await r.json(); if(!d.url||!d.id) throw new Error('session');
+  if(payCtx) payCtx.payId = d.id;
   renderScanSheet('Apple Pay · Scan to pay', d.url, 'Powered by Stripe. You are charged only after you approve on your phone.');
   openSheet('paySheet'); stopPoll();
   _payPoll=setInterval(async ()=>{
@@ -997,6 +999,7 @@ function renderPayPal(){
 function orderPayload(){
   const t = calcTotals();
   return {
+    code: (payCtx && payCtx.code) || null,          // ties the payment to THIS order
     items: cart.map(l => ({ code:l.code, size:l.size||null, qty:l.qty })),
     tip: t.tipAmt,
     coupon: couponApplied ? COUPON.code : null,
@@ -1019,12 +1022,12 @@ function mountPayPal(){
         createOrder: async ()=>{
           const r = await fetch(base+'/api/orders', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(orderPayload()) });
           const d = await r.json();
-          if(d && d.id) return d.id;
+          if(d && d.id){ if(payCtx) payCtx.payId = d.id; return d.id; }
           throw new Error('create_failed');
         },
         onApprove: async (data)=>{
-          const code = newOrderCode();
-          const r = await fetch(base+'/api/orders/'+data.orderID+'/capture', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ order: payPalOrderSnapshot(code) }) });
+          const code = (payCtx && payCtx.code) || newOrderCode();
+          const r = await fetch(base+'/api/orders/'+data.orderID+'/capture', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ order: payPalOrderSnapshot(code), payload: orderPayload() }) });
           const d = await r.json();
           const cap = d && d.purchase_units && d.purchase_units[0] && d.purchase_units[0].payments && d.purchase_units[0].payments.captures && d.purchase_units[0].payments.captures[0];
           if(d && (d.status==='COMPLETED' || (cap && cap.status==='COMPLETED'))){ closeSheets(); placeOrder('PayPal', code); }
